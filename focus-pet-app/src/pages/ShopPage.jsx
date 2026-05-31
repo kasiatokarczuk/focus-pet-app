@@ -4,6 +4,7 @@ import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
+import ShopItemCard from '../components/ShopItemCard';
 import { initialAppState } from '../data/initialState';
 import { mockShopItems } from '../data/mockShopItems';
 
@@ -39,17 +40,7 @@ function ShopPage() {
 
           <div className="shop-grid">
             {visibleItems.map((item) => (
-              <article className="shop-card" key={item.id}>
-                <div className="shop-card__image" aria-hidden="true" />
-                <div className="shop-card__title">
-                  <h3>{item.name}</h3>
-                  <strong>{item.price} Coins</strong>
-                </div>
-                <p>{item.description}</p>
-                <Button variant={item.owned ? 'secondary' : 'primary'}>
-                  {item.owned ? 'Try On' : 'Buy Now'}
-                </Button>
-              </article>
+              <ShopItemCard item={item} key={item.id} />
             ))}
           </div>
         </div>
