@@ -5,19 +5,43 @@ import Button from '../components/Button';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
 import ShopItemCard from '../components/ShopItemCard';
-import { loadAppState } from '../utils/storage';
+import { loadAppState, saveAppState } from '../utils/storage';
 
 const filters = ['All', 'Food', 'Accessories'];
 
 function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All');
-  const [appState] = useState(() => loadAppState());
+  const [appState, setAppState] = useState(() => loadAppState());
   const { coins, pet, shopItems, user } = appState;
 
   const visibleItems = shopItems.filter((item) => {
     if (activeFilter === 'All') return true;
     return item.category === activeFilter.toLowerCase();
   });
+
+  function handleBuyItem(itemId) {
+    setAppState((currentState) => {
+      const selectedItem = currentState.shopItems.find((item) => item.id === itemId);
+
+      if (!selectedItem || selectedItem.owned || currentState.coins < selectedItem.price) {
+        return currentState;
+      }
+
+      const nextState = {
+        ...currentState,
+        coins: currentState.coins - selectedItem.price,
+        inventory: currentState.inventory.includes(itemId)
+          ? currentState.inventory
+          : [...currentState.inventory, itemId],
+        shopItems: currentState.shopItems.map((item) =>
+          item.id === itemId ? { ...item, owned: true } : item
+        ),
+      };
+
+      saveAppState(nextState);
+      return nextState;
+    });
+  }
 
   return (
     <main className="app-shell">
@@ -40,7 +64,7 @@ function ShopPage() {
 
           <div className="shop-grid">
             {visibleItems.map((item) => (
-              <ShopItemCard item={item} key={item.id} />
+              <ShopItemCard item={item} key={item.id} onBuy={handleBuyItem} />
             ))}
           </div>
         </div>

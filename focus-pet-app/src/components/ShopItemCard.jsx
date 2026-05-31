@@ -1,6 +1,12 @@
 import Button from './Button';
 
-function ShopItemCard({ item }) {
+function ShopItemCard({ item, onBuy }) {
+  function handleAction() {
+    if (!item.owned) {
+      onBuy(item.id);
+    }
+  }
+
   return (
     <article className="shop-card">
       <div className="shop-card__image" aria-hidden="true" />
@@ -9,7 +15,7 @@ function ShopItemCard({ item }) {
         <strong>{item.price} Coins</strong>
       </div>
       <p>{item.description}</p>
-      <Button variant={item.owned ? 'secondary' : 'primary'}>
+      <Button onClick={handleAction} variant={item.owned ? 'secondary' : 'primary'}>
         {item.owned ? 'Try On' : 'Buy Now'}
       </Button>
     </article>
