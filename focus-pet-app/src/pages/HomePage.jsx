@@ -3,11 +3,10 @@ import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
-import { initialAppState } from '../data/initialState';
-import { mockTasks } from '../data/mockTasks';
+import { loadAppState } from '../utils/storage';
 
 function HomePage() {
-  const { coins, pet, user } = initialAppState;
+  const { coins, pet, tasks, user } = loadAppState();
 
   return (
     <main className="app-shell">
@@ -22,7 +21,7 @@ function HomePage() {
         </div>
 
         <div className="task-list">
-          {mockTasks.slice(0, 2).map((task) => (
+          {tasks.slice(0, 2).map((task) => (
             <article className="task-card" key={task.id}>
               <input aria-label={`Complete ${task.title}`} type="checkbox" />
               <div>
