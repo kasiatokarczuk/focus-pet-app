@@ -5,16 +5,16 @@ import Button from '../components/Button';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
 import ShopItemCard from '../components/ShopItemCard';
-import { initialAppState } from '../data/initialState';
-import { mockShopItems } from '../data/mockShopItems';
+import { loadAppState } from '../utils/storage';
 
 const filters = ['All', 'Food', 'Accessories'];
 
 function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All');
-  const { coins, pet, user } = initialAppState;
+  const [appState] = useState(() => loadAppState());
+  const { coins, pet, shopItems, user } = appState;
 
-  const visibleItems = mockShopItems.filter((item) => {
+  const visibleItems = shopItems.filter((item) => {
     if (activeFilter === 'All') return true;
     return item.category === activeFilter.toLowerCase();
   });
