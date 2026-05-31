@@ -12,6 +12,7 @@ const filters = ['All', 'Food', 'Accessories'];
 function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [appState, setAppState] = useState(() => loadAppState());
+  const [purchaseMessage, setPurchaseMessage] = useState('');
   const { coins, pet, shopItems, user } = appState;
 
   const visibleItems = shopItems.filter((item) => {
@@ -20,27 +21,37 @@ function ShopPage() {
   });
 
   function handleBuyItem(itemId) {
-    setAppState((currentState) => {
-      const selectedItem = currentState.shopItems.find((item) => item.id === itemId);
+    const selectedItem = appState.shopItems.find((item) => item.id === itemId);
 
-      if (!selectedItem || selectedItem.owned || currentState.coins < selectedItem.price) {
-        return currentState;
-      }
+    if (!selectedItem) {
+      setPurchaseMessage('Item not found.');
+      return;
+    }
 
-      const nextState = {
-        ...currentState,
-        coins: currentState.coins - selectedItem.price,
-        inventory: currentState.inventory.includes(itemId)
-          ? currentState.inventory
-          : [...currentState.inventory, itemId],
-        shopItems: currentState.shopItems.map((item) =>
-          item.id === itemId ? { ...item, owned: true } : item
-        ),
-      };
+    if (selectedItem.owned) {
+      setPurchaseMessage(`${selectedItem.name} is already in your inventory.`);
+      return;
+    }
 
-      saveAppState(nextState);
-      return nextState;
-    });
+    if (appState.coins < selectedItem.price) {
+      setPurchaseMessage(`Not enough coins to buy ${selectedItem.name}.`);
+      return;
+    }
+
+    const nextState = {
+      ...appState,
+      coins: appState.coins - selectedItem.price,
+      inventory: appState.inventory.includes(itemId)
+        ? appState.inventory
+        : [...appState.inventory, itemId],
+      shopItems: appState.shopItems.map((item) =>
+        item.id === itemId ? { ...item, owned: true } : item
+      ),
+    };
+
+    saveAppState(nextState);
+    setAppState(nextState);
+    setPurchaseMessage(`${selectedItem.name} purchased successfully.`);
   }
 
   return (
@@ -61,6 +72,8 @@ function ShopPage() {
               </button>
             ))}
           </div>
+
+          {purchaseMessage ? <p className="shop-feedback">{purchaseMessage}</p> : null}
 
           <div className="shop-grid">
             {visibleItems.map((item) => (

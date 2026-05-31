@@ -2,9 +2,7 @@ import Button from './Button';
 
 function ShopItemCard({ item, onBuy }) {
   function handleAction() {
-    if (!item.owned) {
-      onBuy(item.id);
-    }
+    onBuy(item.id);
   }
 
   return (
