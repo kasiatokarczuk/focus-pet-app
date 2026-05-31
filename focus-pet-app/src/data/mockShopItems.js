@@ -14,6 +14,10 @@ export const mockShopItems = [
     price: 150,
     owned: false,
     description: 'Highly nutritious seeds that boost focus duration by 5%.',
+    effect: {
+      stat: 'energy',
+      value: 12,
+    },
   },
   {
     id: 'item-3',
@@ -22,6 +26,10 @@ export const mockShopItems = [
     price: 120,
     owned: false,
     description: 'A sweet treat that helps your pet recover after focus sessions.',
+    effect: {
+      stat: 'hp',
+      value: 10,
+    },
   },
   {
     id: 'item-4',
@@ -30,6 +38,10 @@ export const mockShopItems = [
     price: 180,
     owned: false,
     description: 'A rare fruit filled with calm energy for long study days.',
+    effect: {
+      stat: 'energy',
+      value: 18,
+    },
   },
   {
     id: 'item-5',
@@ -38,6 +50,10 @@ export const mockShopItems = [
     price: 90,
     owned: false,
     description: 'A warm drink that keeps your pet relaxed and balanced.',
+    effect: {
+      stat: 'hp',
+      value: 8,
+    },
   },
   {
     id: 'item-6',

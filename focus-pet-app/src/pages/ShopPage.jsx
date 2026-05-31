@@ -8,6 +8,22 @@ import ShopItemCard from '../components/ShopItemCard';
 import { loadAppState, saveAppState } from '../utils/storage';
 
 const filters = ['All', 'Food', 'Accessories'];
+const maxPetStat = 100;
+const petStatLabels = {
+  energy: 'Energy',
+  hp: 'HP',
+};
+
+function applyItemEffect(pet, effect) {
+  if (!effect) {
+    return pet;
+  }
+
+  return {
+    ...pet,
+    [effect.stat]: Math.min((pet[effect.stat] || 0) + effect.value, maxPetStat),
+  };
+}
 
 function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All');
@@ -44,6 +60,7 @@ function ShopPage() {
       inventory: appState.inventory.includes(itemId)
         ? appState.inventory
         : [...appState.inventory, itemId],
+      pet: applyItemEffect(appState.pet, selectedItem.effect),
       shopItems: appState.shopItems.map((item) =>
         item.id === itemId ? { ...item, owned: true } : item
       ),
@@ -51,6 +68,14 @@ function ShopPage() {
 
     saveAppState(nextState);
     setAppState(nextState);
+
+    if (selectedItem.effect) {
+      setPurchaseMessage(
+        `${selectedItem.name} purchased successfully. ${petStatLabels[selectedItem.effect.stat]} +${selectedItem.effect.value}.`
+      );
+      return;
+    }
+
     setPurchaseMessage(`${selectedItem.name} purchased successfully.`);
   }
 
