@@ -5,17 +5,17 @@ import Button from '../components/Button';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import PetCard from '../components/PetCard';
-import { initialAppState } from '../data/initialState';
-import { mockTasks } from '../data/mockTasks';
+import { loadAppState } from '../utils/storage';
 
 const filters = ['All', 'Tasks', 'Projects'];
 
 function TasksPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [isAddingTask, setIsAddingTask] = useState(false);
-  const { coins, pet, user } = initialAppState;
+  const [appState] = useState(() => loadAppState());
+  const { coins, pet, tasks, user } = appState;
 
-  const visibleTasks = mockTasks.filter((task) => {
+  const visibleTasks = tasks.filter((task) => {
     if (activeFilter === 'All') return true;
     return task.type === activeFilter.toLowerCase();
   });
