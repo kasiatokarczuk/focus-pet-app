@@ -52,3 +52,43 @@ export const clearUserProgress = async (uid) => {
     return false;
   }
 };
+
+// --- Dodane funkcje synchroniczne dla kompatybilności wstecznej komponentów ---
+const DEFAULT_SHOP_ITEMS = [
+  { id: 'item1', name: 'Pyszna Karma', category: 'food', price: 10, owned: false, effect: { stat: 'hp', value: 20 } },
+  { id: 'item2', name: 'Energetyk dla Psa', category: 'food', price: 15, owned: false, effect: { stat: 'energy', value: 25 } },
+  { id: 'item3', name: 'Czerwona Obroża', category: 'accessories', price: 50, owned: false },
+  { id: 'item4', name: 'Piszcząca Zabawka', category: 'accessories', price: 30, owned: false, effect: { stat: 'happiness', value: 15 } }
+];
+
+const DEFAULT_STATE = {
+  coins: 100, // Na start dajemy trochę monet na testy
+  pet: { level: 1, happiness: 100, health: 100, energy: 100, hp: 100, type: 'dog' },
+  tasks: [],
+  user: { name: 'Użytkownik', title: 'Początkujący' },
+  shopItems: DEFAULT_SHOP_ITEMS,
+  inventory: []
+};
+
+export const loadAppState = () => {
+  try {
+    const data = localStorage.getItem('app_state');
+    if (data) {
+      const parsed = JSON.parse(data);
+      // Łączymy z zapisanymi danymi na wypadek, gdyby brakowało nowych pól (np. shopItems) w starym zapisie
+      return { ...DEFAULT_STATE, ...parsed };
+    }
+    return DEFAULT_STATE;
+  } catch (error) {
+    console.error("Błąd podczas odczytywania stanu aplikacji:", error);
+    return DEFAULT_STATE;
+  }
+};
+
+export const saveAppState = (state) => {
+  try {
+    localStorage.setItem('app_state', JSON.stringify(state));
+  } catch (error) {
+    console.error("Błąd podczas zapisywania stanu aplikacji:", error);
+  }
+};
