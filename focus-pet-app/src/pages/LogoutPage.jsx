@@ -1,33 +1,36 @@
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../components/Button';
-import Modal from '../components/Modal';
-import { clearCurrentUser } from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
+import './AuthPages.css';
 
-function LogoutPage() {
+const LogoutPage = () => {
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  function handleLogout() {
-    clearCurrentUser();
-    navigate('/login');
-  }
+  useEffect(() => {
+    const handleLogout = async () => {
+      try {
+        await logout();
+        navigate('/login', { replace: true });
+      } catch (error) {
+        console.error("Failed to log out", error);
+        // Nawet jeśli wylogowanie z bazy wyrzuci błąd, bezpiecznie przekierowujemy:
+        navigate('/login', { replace: true });
+      }
+    };
+
+    handleLogout();
+  }, [logout, navigate]);
 
   return (
-    <main className="center-page">
-      <a className="brand center-page__brand" href="/home">
-        Focus Pet
-      </a>
-      <Modal title="Before you go...">
-        <div className="logout-avatar" aria-hidden="true" />
-        <p>Your pet will be waiting for you. Are you sure you want to log out?</p>
-        <div className="button-stack">
-          <Button onClick={handleLogout}>Log out</Button>
-          <Button onClick={() => navigate('/home')} variant="secondary">
-            Stay with Focus Pet
-          </Button>
-        </div>
-      </Modal>
-    </main>
+    <div className="auth-container">
+      <div className="auth-card glass-effect" style={{ textAlign: 'center' }}>
+        <h2 className="auth-title">Do zobaczenia!</h2>
+        <p className="auth-subtitle" style={{ margin: '30px 0' }}>Trwa wylogowywanie z Twojego konta...</p>
+        <div className="loading-spinner"></div>
+      </div>
+    </div>
   );
-}
+};
 
 export default LogoutPage;

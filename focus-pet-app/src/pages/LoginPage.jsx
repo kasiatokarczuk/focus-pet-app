@@ -1,55 +1,74 @@
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import { mockUsers } from '../data/mockUsers';
-import { saveCurrentUser } from '../utils/storage';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import './AuthPages.css';
 
-function LoginPage() {
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    saveCurrentUser(mockUsers[0]);
-    navigate('/home');
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    try {
+      setLoading(true);
+      await login(email, password);
+      navigate('/home');
+    } catch (err) {
+      setError('Nie udało się zalogować. Sprawdź e-mail i hasło.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <main className="auth-page auth-page--split">
-      <section className="auth-visual">
-        <Link className="brand" to="/login">
-          Focus Pet
-        </Link>
-        <div className="auth-visual__pet" aria-hidden="true" />
-        <p className="eyebrow">Deep Work Sanctuary</p>
-        <h2>Designed for cosmic flow and quiet productivity.</h2>
-      </section>
-
-      <section className="auth-panel">
-        <div className="auth-panel__top">
-          <span>Support</span>
-          <Link className="pill-link" to="/register">
-            Create Account
-          </Link>
-        </div>
-        <h1>Welcome Back</h1>
-        <p>Re-enter your focus chamber.</p>
-
-        <form className="form-stack" onSubmit={handleSubmit}>
-          <Input id="email" label="Email address" placeholder="cosmic@focuspet.com" type="email" />
-          <Input id="password" label="Password" placeholder="Password" type="password" />
-          <Button type="submit">Login to Focus Pet</Button>
-        </form>
-
-        <div className="auth-links">
-          <span>Or continue with</span>
-          <div className="auth-links__buttons">
-            <Button variant="secondary">Google</Button>
-            <Button variant="secondary">Apple</Button>
+    <div className="auth-container">
+      <div className="auth-card glass-effect">
+        <h2 className="auth-title">Witaj ponownie</h2>
+        <p className="auth-subtitle">Zaloguj się do Focus Pet</p>
+        
+        {error && <div className="auth-error">{error}</div>}
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label>Email</label>
+            <input 
+              type="email" 
+              required 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Wpisz swój email"
+            />
           </div>
+          <div className="form-group">
+            <label>Hasło</label>
+            <input 
+              type="password" 
+              required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Wpisz hasło"
+            />
+          </div>
+          
+          <button disabled={loading} type="submit" className="auth-button">
+            {loading ? 'Logowanie...' : 'Zaloguj się'}
+          </button>
+        </form>
+        
+        <div className="auth-links">
+          <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
-}
+};
 
 export default LoginPage;
