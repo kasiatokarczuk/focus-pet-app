@@ -9,7 +9,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,6 +22,20 @@ const LoginPage = () => {
       navigate('/home');
     } catch (err) {
       setError('Nie udało się zalogować. Sprawdź e-mail i hasło.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    try {
+      setLoading(true);
+      await loginWithGoogle();
+      navigate('/home');
+    } catch (err) {
+      setError('Logowanie przez Google nie powiodło się.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -62,6 +76,19 @@ const LoginPage = () => {
             {loading ? 'Logowanie...' : 'Zaloguj się'}
           </button>
         </form>
+
+        <div style={{ textAlign: 'center', margin: '20px 0' }}>
+          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>LUB</span>
+          <button 
+            type="button" 
+            onClick={handleGoogleLogin} 
+            disabled={loading}
+            className="auth-button"
+            style={{ background: '#DB4437', marginTop: '15px', width: '100%' }}
+          >
+            {loading ? 'Ładowanie...' : 'Zaloguj przez Google'}
+          </button>
+        </div>
         
         <div className="auth-links">
           <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
