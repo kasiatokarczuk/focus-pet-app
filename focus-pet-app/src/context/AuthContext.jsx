@@ -3,9 +3,10 @@ import {
   onAuthStateChanged, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
+  signInWithPopup,
   signOut 
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { auth, googleProvider } from '../config/firebase';
 
 // Utworzenie kontekstu autoryzacji
 const AuthContext = createContext();
@@ -43,6 +44,15 @@ export const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
 
+  // Funkcja logowania przez Google
+  const loginWithGoogle = async () => {
+    if (BYPASS_FIREBASE) {
+      setCurrentUser({ uid: 'dev-user-google', email: 'google@dev.local' });
+      return Promise.resolve();
+    }
+    return signInWithPopup(auth, googleProvider);
+  };
+
   // Funkcja wylogowania
   const logout = async () => {
     if (BYPASS_FIREBASE) {
@@ -58,7 +68,7 @@ export const AuthProvider = ({ children }) => {
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
-      setLoading(false); // Zatrzymujemy ładowanie, gdy otrzymamy stan
+      setLoading(false); // Kończymy ładowanie, gdy otrzymamy stan
     });
 
     // Czyszczenie subskrypcji przy odmontowaniu komponentu
@@ -68,15 +78,17 @@ export const AuthProvider = ({ children }) => {
   // Wartości dostępne w kontekście
   const value = {
     currentUser,
+    loading, // Dodano stan loading do udostępnienia dla PrivateRoute
     register,
     login,
+    loginWithGoogle,
     logout
   };
 
-  // Renderujemy dzieci dopiero po pobraniu początkowego stanu autoryzacji
+  // Renderujemy dzieci bezwarunkowo, aby PrivateRoute mogło obsługiwać loading
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

@@ -22,7 +22,7 @@ import SessionCompletePage from './pages/SessionCompletePage';
 
 // Importy związane z autoryzacją
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
@@ -37,19 +37,19 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* Trasy chronione */}
-          <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-          <Route path="/tasks" element={<ProtectedRoute><TasksPage /></ProtectedRoute>} />
-          <Route path="/tasks/new" element={<ProtectedRoute><NewTaskPage /></ProtectedRoute>} />
-          <Route path="/tasks/filter/tasks" element={<ProtectedRoute><FilterTasksPage /></ProtectedRoute>} />
-          <Route path="/tasks/filter/projects" element={<ProtectedRoute><FilterProjectsPage /></ProtectedRoute>} />
-          <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
-          <Route path="/shop/food" element={<ProtectedRoute><ShopFoodPage /></ProtectedRoute>} />
-          <Route path="/shop/accessories" element={<ProtectedRoute><ShopAccessoriesPage /></ProtectedRoute>} />
-          <Route path="/session" element={<ProtectedRoute><FocusSessionPage /></ProtectedRoute>} />
-          <Route path="/session/paused" element={<ProtectedRoute><SessionPausedPage /></ProtectedRoute>} />
-          <Route path="/session/complete" element={<ProtectedRoute><SessionCompletePage /></ProtectedRoute>} />
-          <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
-          <Route path="/logout" element={<ProtectedRoute><LogoutPage /></ProtectedRoute>} />
+          <Route path="/home" element={<PrivateRoute><HomePage /></PrivateRoute>} />
+          <Route path="/tasks" element={<PrivateRoute><TasksPage /></PrivateRoute>} />
+          <Route path="/tasks/new" element={<PrivateRoute><NewTaskPage /></PrivateRoute>} />
+          <Route path="/tasks/filter/tasks" element={<PrivateRoute><FilterTasksPage /></PrivateRoute>} />
+          <Route path="/tasks/filter/projects" element={<PrivateRoute><FilterProjectsPage /></PrivateRoute>} />
+          <Route path="/shop" element={<PrivateRoute><ShopPage /></PrivateRoute>} />
+          <Route path="/shop/food" element={<PrivateRoute><ShopFoodPage /></PrivateRoute>} />
+          <Route path="/shop/accessories" element={<PrivateRoute><ShopAccessoriesPage /></PrivateRoute>} />
+          <Route path="/session" element={<PrivateRoute><FocusSessionPage /></PrivateRoute>} />
+          <Route path="/session/paused" element={<PrivateRoute><SessionPausedPage /></PrivateRoute>} />
+          <Route path="/session/complete" element={<PrivateRoute><SessionCompletePage /></PrivateRoute>} />
+          <Route path="/onboarding" element={<PrivateRoute><OnboardingPage /></PrivateRoute>} />
+          <Route path="/logout" element={<PrivateRoute><LogoutPage /></PrivateRoute>} />
 
           {/* Trasa nieznaleziona (404) */}
           <Route path="*" element={<NotFoundPage />} />
