@@ -5,6 +5,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 250,
     owned: true,
+    image: '/assets/shop/summer-straw-hat.png',
     description: 'A lightweight hat for sunny days in the pet garden.',
   },
   {
@@ -13,6 +14,7 @@ export const mockShopItems = [
     category: 'food',
     price: 150,
     owned: false,
+    image: '/assets/shop/golden-seeds.png',
     description: 'Highly nutritious seeds that boost focus duration by 5%.',
     effect: {
       stat: 'energy',
@@ -25,6 +27,7 @@ export const mockShopItems = [
     category: 'food',
     price: 120,
     owned: false,
+    image: '/assets/shop/moonberry-snack.png',
     description: 'A sweet treat that helps your pet recover after focus sessions.',
     effect: {
       stat: 'hp',
@@ -37,6 +40,7 @@ export const mockShopItems = [
     category: 'food',
     price: 180,
     owned: false,
+    image: '/assets/shop/crystal-apple.png',
     description: 'A rare fruit filled with calm energy for long study days.',
     effect: {
       stat: 'energy',
@@ -49,6 +53,7 @@ export const mockShopItems = [
     category: 'food',
     price: 90,
     owned: false,
+    image: '/assets/shop/dream-tea.png',
     description: 'A warm drink that keeps your pet relaxed and balanced.',
     effect: {
       stat: 'hp',
@@ -61,6 +66,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 320,
     owned: false,
+    image: '/assets/shop/starry-scarf.png',
     description: 'A soft scarf decorated with tiny glowing stars.',
   },
   {
@@ -69,6 +75,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 400,
     owned: false,
+    image: '/assets/shop/focus-glasses.png',
     description: 'Stylish glasses for pets who supervise deep work rituals.',
   },
   {
@@ -77,6 +84,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 280,
     owned: false,
+    image: '/assets/shop/tiny-backpack.png',
     description: 'A practical backpack for carrying snacks and small rewards.',
   },
 ];

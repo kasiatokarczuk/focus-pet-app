@@ -599,8 +599,19 @@ input {
 }
 
 .shop-card__image {
+  align-items: center;
   border-radius: 8px;
+  display: flex;
   height: 176px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.shop-card__image img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .shop-card__title {
