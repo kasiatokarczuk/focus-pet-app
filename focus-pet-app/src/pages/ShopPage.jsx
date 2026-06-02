@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
 import Header from '../components/Header';
 import PetCard from '../components/PetCard';
 import ShopItemCard from '../components/ShopItemCard';
-import { loadAppState, saveAppState } from '../utils/storage';
+import { getUserData, saveUserData } from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
+import { initialAppState } from '../data/initialState';
 
 const filters = ['All', 'Food', 'Accessories'];
 const maxPetStat = 100;
@@ -26,9 +28,30 @@ function applyItemEffect(pet, effect) {
 }
 
 function ShopPage() {
+  const { currentUser } = useAuth();
   const [activeFilter, setActiveFilter] = useState('All');
-  const [appState, setAppState] = useState(() => loadAppState());
+  const [appState, setAppState] = useState(null);
   const [purchaseMessage, setPurchaseMessage] = useState('');
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!currentUser) return;
+      const data = await getUserData(currentUser.uid);
+      setAppState(data || initialAppState);
+    }
+    fetchData();
+  }, [currentUser]);
+
+  if (!appState) {
+    return (
+      <main className="app-shell">
+        <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="loading-spinner"></div>
+        </div>
+      </main>
+    );
+  }
+
   const { coins, pet, shopItems, user } = appState;
 
   const visibleItems = shopItems.filter((item) => {
@@ -66,7 +89,7 @@ function ShopPage() {
       ),
     };
 
-    saveAppState(nextState);
+    saveUserData(currentUser.uid, nextState);
     setAppState(nextState);
 
     if (selectedItem.effect) {

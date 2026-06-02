@@ -1,18 +1,41 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import PetCard from '../components/PetCard';
-import { loadAppState } from '../utils/storage';
+import { getUserData } from '../utils/storage';
+import { useAuth } from '../context/AuthContext';
+import { initialAppState } from '../data/initialState';
 
 const filters = ['All', 'Tasks', 'Projects'];
 
 function TasksPage() {
+  const { currentUser } = useAuth();
   const [activeFilter, setActiveFilter] = useState('All');
   const [isAddingTask, setIsAddingTask] = useState(false);
-  const [appState] = useState(() => loadAppState());
+  const [appState, setAppState] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!currentUser) return;
+      const data = await getUserData(currentUser.uid);
+      setAppState(data || initialAppState);
+    }
+    fetchData();
+  }, [currentUser]);
+
+  if (!appState) {
+    return (
+      <main className="app-shell">
+        <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="loading-spinner"></div>
+        </div>
+      </main>
+    );
+  }
+
   const { coins, pet, tasks, user } = appState;
 
   const visibleTasks = tasks.filter((task) => {

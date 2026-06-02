@@ -24,8 +24,8 @@ const RegisterPage = () => {
       setError('');
       setLoading(true);
       await register(email, password);
-      // Po pomyślnej rejestracji przekierowujemy na stronę główną (lub onboarding)
-      navigate('/home'); 
+      // Po pomyślnej rejestracji kierujemy na onboarding, aby założył profil zwierzaka
+      navigate('/onboarding'); 
     } catch (err) {
       setError('Nie udało się utworzyć konta. Spróbuj innego adresu email.');
       console.error(err);
