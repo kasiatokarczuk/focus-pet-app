@@ -17,7 +17,7 @@ const RegisterPage = () => {
     e.preventDefault();
     
     if (password !== passwordConfirm) {
-      return setError('Hasła nie są identyczne.');
+      return setError('Passwords do not match.');
     }
     
     try {
@@ -27,7 +27,7 @@ const RegisterPage = () => {
       // Po pomyślnej rejestracji kierujemy na onboarding, aby założył profil zwierzaka
       navigate('/onboarding'); 
     } catch (err) {
-      setError('Nie udało się utworzyć konta. Spróbuj innego adresu email.');
+      setError('Failed to create account. Please try a different email address.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -35,10 +35,22 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-effect">
-        <h2 className="auth-title">Dołącz do nas</h2>
-        <p className="auth-subtitle">Zarejestruj się w Focus Pet</p>
+    <div className="auth-container auth-container--register">
+      <header className="auth-topbar">
+        <Link className="auth-brand" to="/login">Focus Pet</Link>
+        <div className="auth-top-actions">
+          <span>Already have an account?</span>
+          <Link className="auth-top-button" to="/login">Log in</Link>
+        </div>
+      </header>
+
+      <main className="auth-register-shell">
+        <div className="auth-card glass-effect">
+          <div className="auth-egg" aria-hidden="true">
+            <span />
+          </div>
+        <h2 className="auth-title">Join us</h2>
+        <p className="auth-subtitle">Create an account in Focus Pet</p>
         
         {error && <div className="auth-error">{error}</div>}
         
@@ -50,39 +62,40 @@ const RegisterPage = () => {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Wpisz swój email"
+              placeholder="Enter your email"
             />
           </div>
           <div className="form-group">
-            <label>Hasło</label>
+            <label>Password</label>
             <input 
               type="password" 
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimum 6 znaków"
+              placeholder="Minimum 6 characters"
             />
           </div>
           <div className="form-group">
-            <label>Potwierdź hasło</label>
+            <label>Confirm Password</label>
             <input 
               type="password" 
               required 
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              placeholder="Powtórz hasło"
+              placeholder="Repeat password"
             />
           </div>
           
           <button disabled={loading} type="submit" className="auth-button">
-            {loading ? 'Rejestracja...' : 'Zarejestruj się'}
+            {loading ? 'Creating account...' : 'Sign up'}
           </button>
         </form>
         
         <div className="auth-links">
-          <p>Masz już konto? <Link to="/login">Zaloguj się</Link></p>
+          <p>Already have an account? <Link to="/login">Log in</Link></p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

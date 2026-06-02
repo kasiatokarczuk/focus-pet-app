@@ -61,7 +61,12 @@ function OnboardingPage() {
               onClick={() => setSelectedPet(pet.id)}
               type="button"
             >
-              <span className="pet-choice__image" aria-hidden="true" />
+              <img
+                className="pet-choice__image"
+                src={`${process.env.PUBLIC_URL}${pet.eggImage}`}
+                alt=""
+                aria-hidden="true"
+              />
               <span>{pet.label}</span>
             </button>
           ))}

@@ -21,7 +21,7 @@ const LoginPage = () => {
       await login(email, password);
       navigate('/home');
     } catch (err) {
-      setError('Nie udało się zalogować. Sprawdź e-mail i hasło.');
+      setError('Login failed. Check your email and password.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -35,7 +35,7 @@ const LoginPage = () => {
       await loginWithGoogle();
       navigate('/home');
     } catch (err) {
-      setError('Logowanie przez Google nie powiodło się.');
+      setError('Google login failed.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -43,10 +43,29 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-effect">
-        <h2 className="auth-title">Witaj ponownie</h2>
-        <p className="auth-subtitle">Zaloguj się do Focus Pet</p>
+    <div className="auth-container auth-container--login">
+      <header className="auth-topbar">
+        <Link className="auth-brand" to="/login">Focus Pet</Link>
+        <div className="auth-top-actions">
+          <Link className="auth-top-button" to="/register">Create Account</Link>
+        </div>
+      </header>
+
+      <main className="auth-login-shell">
+        <section className="auth-visual-panel" aria-label="Focus Pet preview">
+          <div className="auth-pet-orb" aria-hidden="true">
+            <div className="auth-pet-face">
+              <span className="auth-pet-ear auth-pet-ear--left" />
+              <span className="auth-pet-ear auth-pet-ear--right" />
+            </div>
+          </div>
+          <p className="auth-eyebrow">Focus sanctuary</p>
+          <h2>Peaceful space for work, learning, and building good habits.</h2>
+        </section>
+
+        <div className="auth-card glass-effect">
+        <h2 className="auth-title">Welcome back</h2>
+        <p className="auth-subtitle">Log in to Focus Pet</p>
         
         {error && <div className="auth-error">{error}</div>}
         
@@ -58,27 +77,27 @@ const LoginPage = () => {
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Wpisz swój email"
+              placeholder="Enter your email"
             />
           </div>
           <div className="form-group">
-            <label>Hasło</label>
+            <label>Password</label>
             <input 
               type="password" 
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Wpisz hasło"
+              placeholder="Enter your password"
             />
           </div>
           
           <button disabled={loading} type="submit" className="auth-button">
-            {loading ? 'Logowanie...' : 'Zaloguj się'}
+            {loading ? 'Logging in...' : 'Log in'}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', margin: '20px 0' }}>
-          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>LUB</span>
+          <span style={{ color: '#a0a0b0', fontSize: '0.85rem' }}>OR</span>
           <button 
             type="button" 
             onClick={handleGoogleLogin} 
@@ -86,14 +105,15 @@ const LoginPage = () => {
             className="auth-button"
             style={{ background: '#DB4437', marginTop: '15px', width: '100%' }}
           >
-            {loading ? 'Ładowanie...' : 'Zaloguj przez Google'}
+            {loading ? 'Loading...' : 'Log in with Google'}
           </button>
         </div>
         
         <div className="auth-links">
-          <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
+          <p>Don't have an account? <Link to="/register">Sign up</Link></p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

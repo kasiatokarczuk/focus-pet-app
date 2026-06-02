@@ -1,14 +1,18 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Button from '../components/Button';
 import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
 const LogoutPage = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const handleLogout = async () => {
+  const handleLogout = async () => {
+    setError('');
+    setLoading(true);
       try {
         await logout();
         navigate('/login', { replace: true });
@@ -19,17 +23,44 @@ const LogoutPage = () => {
       }
     };
 
-    handleLogout();
-  }, [logout, navigate]);
+  const handleStay = () => {
+    navigate('/home');
+  };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-effect" style={{ textAlign: 'center' }}>
-        <h2 className="auth-title">Do zobaczenia!</h2>
-        <p className="auth-subtitle" style={{ margin: '30px 0' }}>Trwa wylogowywanie z Twojego konta...</p>
-        <div className="loading-spinner"></div>
-      </div>
-    </div>
+    <main className="center-page logout-page">
+      <Link className="brand center-page__brand" to="/home">
+        Focus Pet
+      </Link>
+
+      <section className="modal-card logout-card">
+        <div className="logout-avatar" aria-hidden="true">
+          <img
+            className="logout-avatar__image"
+            src={`${process.env.PUBLIC_URL}/assets/pets/dog/baby.png`}
+            alt=""
+          />
+        </div>
+
+        <h1>Before you go...</h1>
+        <p>
+          Your pet will be waiting for you.
+          <br />
+          Are you sure you want to log out?
+        </p>
+
+        {error && <div className="field__error">{error}</div>}
+
+        <div className="button-stack logout-actions">
+          <Button onClick={handleLogout} disabled={loading}>
+            {loading ? 'Logging out...' : 'Log out'}
+          </Button>
+          <Button variant="secondary" onClick={handleStay} disabled={loading}>
+            Stay with Focus Pet
+          </Button>
+        </div>
+      </section>
+    </main>
   );
 };
 

@@ -2,11 +2,11 @@ import { mockShopItems } from './mockShopItems';
 import { mockTasks } from './mockTasks';
 
 export const petChoices = [
-  { id: 'dragon', label: 'Friendly Dragon' },
-  { id: 'horse', label: 'Cute Horse' },
-  { id: 'fox', label: 'Lovely Fox' },
-  { id: 'cat', label: 'Magic Cat' },
-  { id: 'dog', label: 'Funny Dog' },
+  { id: 'dragon', label: 'Friendly Dragon', eggImage: '/assets/pets/dragon/egg.png' },
+  { id: 'horse', label: 'Cute Horse', eggImage: '/assets/pets/horse/egg.png' },
+  { id: 'fox', label: 'Lovely Fox', eggImage: '/assets/pets/fox/egg.png' },
+  { id: 'cat', label: 'Magic Cat', eggImage: '/assets/pets/cat/egg.png' },
+  { id: 'dog', label: 'Funny Dog', eggImage: '/assets/pets/dog/egg.png' },
 ];
 
 export const initialAppState = {
