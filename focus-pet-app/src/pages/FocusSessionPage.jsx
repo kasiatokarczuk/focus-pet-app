@@ -1,22 +1,84 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Button from '../components/Button';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Pause, Square, Volume2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { initialAppState } from '../data/initialState';
 import { mockTasks } from '../data/mockTasks';
 import { calculateSessionRewards } from '../utils/rewards';
+import { getUserData, saveUserData } from '../utils/storage';
 import { formatSeconds } from '../utils/timer';
 import SessionCompletePage from './SessionCompletePage';
 import SessionPausedPage from './SessionPausedPage';
 
-const sessionLengthSeconds = 25 * 60;
+const maxPetStat = 100;
 
 function FocusSessionPage() {
+  const { currentUser } = useAuth();
+  const location = useLocation();
+  const [appState, setAppState] = useState(null);
   const [sessionState, setSessionState] = useState('running');
-  const [remainingSeconds, setRemainingSeconds] = useState(sessionLengthSeconds);
-  const rewards = calculateSessionRewards(sessionLengthSeconds);
-  const task = mockTasks[0];
+  const [remainingSeconds, setRemainingSeconds] = useState(null);
+  const [completedSession, setCompletedSession] = useState(null);
+  const selectedTaskFromRoute = location.state?.task;
+  const selectedTaskId = location.state?.taskId || selectedTaskFromRoute?.id;
+  const task =
+    appState?.tasks?.find((item) => item.id === selectedTaskId) ||
+    selectedTaskFromRoute ||
+    appState?.tasks?.[0] ||
+    mockTasks[0];
+  const sessionDurationSeconds = (task.sessionLength || 25) * 60;
+
+  const completeSession = useCallback((focusSeconds) => {
+    const finalFocusSeconds = Math.max(focusSeconds, 0);
+    const rewards = calculateSessionRewards(finalFocusSeconds);
+
+    setCompletedSession({
+      focusSeconds: finalFocusSeconds,
+      rewards,
+    });
+    setSessionState('complete');
+
+    if (!appState || !currentUser) {
+      return;
+    }
+
+    const nextState = {
+      ...appState,
+      coins: appState.coins + rewards.coins,
+      pet: {
+        ...appState.pet,
+        hp: Math.min((appState.pet?.hp || 0) + rewards.hp, maxPetStat),
+        xp: (appState.pet?.xp || 0) + rewards.xp,
+      },
+      tasks: appState.tasks.map((item) =>
+        item.id === task.id ? { ...item, isDone: true } : item
+      ),
+    };
+
+    setAppState(nextState);
+    saveUserData(currentUser.uid, nextState);
+  }, [appState, currentUser, task.id]);
 
   useEffect(() => {
-    if (sessionState !== 'running') {
+    async function fetchData() {
+      if (!currentUser) return;
+      const data = await getUserData(currentUser.uid);
+      setAppState(data || initialAppState);
+    }
+
+    fetchData();
+  }, [currentUser]);
+
+  useEffect(() => {
+    const canStartTimer = Boolean(appState || selectedTaskFromRoute);
+
+    if (canStartTimer && task?.id && remainingSeconds === null && completedSession === null) {
+      setRemainingSeconds(sessionDurationSeconds);
+    }
+  }, [appState, completedSession, remainingSeconds, selectedTaskFromRoute, sessionDurationSeconds, task?.id]);
+
+  useEffect(() => {
+    if (!appState || sessionState !== 'running' || remainingSeconds === null) {
       return undefined;
     }
 
@@ -25,27 +87,54 @@ function FocusSessionPage() {
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [sessionState]);
+  }, [appState, remainingSeconds, sessionState]);
 
   useEffect(() => {
-    if (sessionState === 'running' && remainingSeconds === 0) {
-      setSessionState('complete');
+    if (sessionState === 'running' && remainingSeconds === 0 && completedSession === null) {
+      completeSession(sessionDurationSeconds);
     }
-  }, [remainingSeconds, sessionState]);
+  }, [completeSession, completedSession, remainingSeconds, sessionDurationSeconds, sessionState]);
 
   function handleRestart() {
-    setRemainingSeconds(sessionLengthSeconds);
+    setCompletedSession(null);
+    setRemainingSeconds(sessionDurationSeconds);
     setSessionState('running');
   }
 
+  if (!appState) {
+    return (
+      <main className="session-page">
+        <div className="loading-spinner" />
+      </main>
+    );
+  }
+
+  const petType = appState.pet?.type || 'fox';
+  const petName = task.petName || appState.pet?.name || 'Finley';
+  const petImage = `${process.env.PUBLIC_URL}/assets/pets/${petType}/sleeping.png`;
+  const completedFocusSeconds = completedSession?.focusSeconds ?? sessionDurationSeconds;
+  const focusTime = formatSeconds(completedFocusSeconds);
+  const rewards = completedSession?.rewards ?? calculateSessionRewards(completedFocusSeconds);
+
   if (sessionState === 'paused') {
-    return <SessionPausedPage onResume={() => setSessionState('running')} task={task} />;
+    return (
+      <SessionPausedPage
+        appState={appState}
+        onResume={() => setSessionState('running')}
+        petImage={petImage}
+        petName={petName}
+        task={task}
+      />
+    );
   }
 
   if (sessionState === 'complete') {
     return (
       <SessionCompletePage
+        appState={appState}
+        focusTime={focusTime}
         onRestart={handleRestart}
+        petName={petName}
         rewards={rewards}
       />
     );
@@ -53,21 +142,56 @@ function FocusSessionPage() {
 
   return (
     <main className="session-page">
-      <section className="session-card">
-        <p className="session-task">Task: {task.title}</p>
-        <strong className="session-timer">{formatSeconds(remainingSeconds)}</strong>
-        <div className="session-pet" aria-hidden="true" />
-        <h1>{task.petName} is resting while you work</h1>
-        <p>Do not leave the app or your pet will wake up.</p>
+      <section className="session-card session-card--focus">
+        <p className="session-task">
+          <span>Task:</span>
+          <strong>{task.title}</strong>
+        </p>
 
-        <div className="session-controls">
-          <Button onClick={() => setSessionState('complete')} variant="secondary">
-            End Session
-          </Button>
-          <Button onClick={() => setSessionState('paused')}>Take a Breath</Button>
-          <Link to="/home">
-            <Button variant="secondary">Back Home</Button>
-          </Link>
+        <div className="session-timer-shell">
+          <strong className="session-timer">{formatSeconds(remainingSeconds ?? sessionDurationSeconds)}</strong>
+        </div>
+
+        <div className="session-pet-frame">
+          <video
+         autoPlay
+        loop
+    muted
+    playsInline
+    aria-hidden="true"
+  >
+    <source src={`${process.env.PUBLIC_URL}/assets/pets/cat/sleep-video.mp4`} type="video/mp4" />
+  </video>
+</div>
+
+        <h1>{petName} is resting while you work</h1>
+        <p>Don't leave the app or {petName} will wake up</p>
+
+        <div className="session-controls session-controls--icon">
+          <button
+            className="session-icon-action"
+            onClick={() => completeSession(sessionDurationSeconds - (remainingSeconds ?? sessionDurationSeconds))}
+            type="button"
+          >
+            <span>
+              <Square aria-hidden="true" size={18} />
+            </span>
+            <strong>End Session</strong>
+          </button>
+
+          <button className="session-icon-action session-icon-action--primary" onClick={() => setSessionState('paused')} type="button">
+            <span>
+              <Pause aria-hidden="true" size={22} />
+            </span>
+            <strong>Take a Breath</strong>
+          </button>
+
+          <button className="session-icon-action" type="button">
+            <span>
+              <Volume2 aria-hidden="true" size={18} />
+            </span>
+            <strong>Zen Sounds</strong>
+          </button>
         </div>
       </section>
     </main>

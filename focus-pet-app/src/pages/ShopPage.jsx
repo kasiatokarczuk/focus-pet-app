@@ -32,6 +32,7 @@ function ShopPage() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [appState, setAppState] = useState(null);
   const [purchaseMessage, setPurchaseMessage] = useState('');
+  const [lastStatGain, setLastStatGain] = useState({});
 
   useEffect(() => {
     async function fetchData() {
@@ -41,6 +42,18 @@ function ShopPage() {
     }
     fetchData();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!Object.keys(lastStatGain).length) {
+      return undefined;
+    }
+
+    const hideGainTimer = setTimeout(() => {
+      setLastStatGain({});
+    }, 1000);
+
+    return () => clearTimeout(hideGainTimer);
+  }, [lastStatGain]);
 
   if (!appState) {
     return (
@@ -64,16 +77,19 @@ function ShopPage() {
 
     if (!selectedItem) {
       setPurchaseMessage('Item not found.');
+      setLastStatGain({});
       return;
     }
 
     if (selectedItem.owned) {
       setPurchaseMessage(`${selectedItem.name} is already in your inventory.`);
+      setLastStatGain({});
       return;
     }
 
     if (appState.coins < selectedItem.price) {
       setPurchaseMessage(`Not enough coins to buy ${selectedItem.name}.`);
+      setLastStatGain({});
       return;
     }
 
@@ -93,12 +109,14 @@ function ShopPage() {
     setAppState(nextState);
 
     if (selectedItem.effect) {
+      setLastStatGain({ [selectedItem.effect.stat]: selectedItem.effect.value });
       setPurchaseMessage(
         `${selectedItem.name} purchased successfully. ${petStatLabels[selectedItem.effect.stat]} +${selectedItem.effect.value}.`
       );
       return;
     }
 
+    setLastStatGain({});
     setPurchaseMessage(`${selectedItem.name} purchased successfully.`);
   }
 
@@ -131,7 +149,7 @@ function ShopPage() {
         </div>
 
         <aside>
-          <PetCard compact pet={pet} />
+          <PetCard compact pet={pet} statGains={lastStatGain} />
         </aside>
       </section>
 

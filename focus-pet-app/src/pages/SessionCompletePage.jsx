@@ -1,26 +1,69 @@
 import { Link } from 'react-router-dom';
+import { CircleDollarSign, Sparkles } from 'lucide-react';
+import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
-import Modal from '../components/Modal';
+import Header from '../components/Header';
+import { initialAppState } from '../data/initialState';
+import { calculateSessionRewards } from '../utils/rewards';
 
-function SessionCompletePage({ onRestart, rewards }) {
+const defaultFocusTime = '25:00';
+const defaultRewards = calculateSessionRewards(25 * 60);
+
+function SessionCompletePage({
+  appState = initialAppState,
+  focusTime = defaultFocusTime,
+  onRestart,
+  rewards = defaultRewards,
+}) {
+  const { coins, user } = appState;
+  const restartButton = (
+    <Button className="session-complete__secondary" onClick={onRestart} variant="secondary">
+      Start New Session
+    </Button>
+  );
+
   return (
-    <main className="session-page">
-      <Modal title="Session Complete">
+    <main className="app-shell app-shell--session-state">
+      <Header coins={coins} userLevel={user.title} userName={user.name} />
+
+      <section className="session-state-card session-complete-card">
+        <Sparkles className="session-complete__sparkle" aria-hidden="true" size={42} />
+        <h1>Session Complete</h1>
         <p>Your sanctuary has evolved through your discipline.</p>
-        <div className="reward-list">
-          <span>Focus time: 25:00</span>
-          <span>Resilience gained: +{rewards.hp} HP</span>
-          <strong>Currency accrued: {rewards.coins} Coins</strong>
+
+        <div className="session-complete__stats">
+          <div className="session-complete__time">
+            <span>Focus Time</span>
+            <strong>{focusTime}</strong>
+          </div>
+
+          <div className="session-complete__resilience">
+            <div>
+              <span>Resilience Gained</span>
+              <strong>+{rewards.hp} HP</strong>
+            </div>
+            <div className="session-complete__hp-track">
+              <span style={{ width: `${Math.min(rewards.hp * 4, 100)}%` }} />
+            </div>
+          </div>
         </div>
-        <div className="button-row">
+
+        <div className="session-complete__coins">
+          <CircleDollarSign aria-hidden="true" size={24} />
+          <span>Currency Accrued</span>
+          <strong>{rewards.coins} Coins</strong>
+        </div>
+
+        <div className="session-complete__actions">
           <Link to="/home">
             <Button>Return to Focus Pet</Button>
           </Link>
-          <Button onClick={onRestart} variant="secondary">
-            Start New Session
-          </Button>
+          {onRestart ? restartButton : <Link to="/session">{restartButton}</Link>}
         </div>
-      </Modal>
+
+      </section>
+
+      <BottomNav />
     </main>
   );
 }

@@ -11,6 +11,7 @@ import { initialAppState } from '../data/initialState';
 function HomePage() {
   const { currentUser } = useAuth();
   const [appState, setAppState] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -20,6 +21,12 @@ function HomePage() {
     }
     fetchData();
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!selectedTaskId && appState?.tasks?.length) {
+      setSelectedTaskId(appState.tasks[0].id);
+    }
+  }, [appState, selectedTaskId]);
 
   if (!appState) {
     return (
@@ -32,6 +39,7 @@ function HomePage() {
   }
 
   const { coins, pet, tasks, user } = appState;
+  const selectedTask = tasks.find((task) => task.id === selectedTaskId) || tasks[0];
 
   return (
     <main className="app-shell">
@@ -47,8 +55,17 @@ function HomePage() {
 
         <div className="task-list">
           {tasks.slice(0, 2).map((task) => (
-            <article className="task-card" key={task.id}>
-              <input aria-label={`Complete ${task.title}`} type="checkbox" />
+            <article
+              className={`task-card ${selectedTaskId === task.id ? 'task-card--selected' : ''}`.trim()}
+              key={task.id}
+              onClick={() => setSelectedTaskId(task.id)}
+            >
+              <input
+                aria-label={`Select ${task.title}`}
+                checked={selectedTaskId === task.id}
+                onChange={() => setSelectedTaskId(task.id)}
+                type="checkbox"
+              />
               <div>
                 <h3>{task.title}</h3>
                 <p>
@@ -60,7 +77,7 @@ function HomePage() {
         </div>
       </section>
 
-      <Link className="floating-action" to="/session">
+      <Link className="floating-action" state={{ task: selectedTask, taskId: selectedTask?.id }} to="/session">
         <Button>Start Session</Button>
       </Link>
       <BottomNav />
