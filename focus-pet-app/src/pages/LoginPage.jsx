@@ -43,8 +43,27 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-effect">
+    <div className="auth-container auth-container--login">
+      <header className="auth-topbar">
+        <Link className="auth-brand" to="/login">Focus Pet</Link>
+        <div className="auth-top-actions">
+          <Link className="auth-top-button" to="/register">Stwórz konto</Link>
+        </div>
+      </header>
+
+      <main className="auth-login-shell">
+        <section className="auth-visual-panel" aria-label="Focus Pet preview">
+          <div className="auth-pet-orb" aria-hidden="true">
+            <div className="auth-pet-face">
+              <span className="auth-pet-ear auth-pet-ear--left" />
+              <span className="auth-pet-ear auth-pet-ear--right" />
+            </div>
+          </div>
+          <p className="auth-eyebrow">Strefa skupienia</p>
+          <h2>Spokojna przestrzeń do pracy, nauki i budowania dobrych nawyków.</h2>
+        </section>
+
+        <div className="auth-card glass-effect">
         <h2 className="auth-title">Witaj ponownie</h2>
         <p className="auth-subtitle">Zaloguj się do Focus Pet</p>
         
@@ -93,7 +112,8 @@ const LoginPage = () => {
         <div className="auth-links">
           <p>Nie masz konta? <Link to="/register">Zarejestruj się</Link></p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

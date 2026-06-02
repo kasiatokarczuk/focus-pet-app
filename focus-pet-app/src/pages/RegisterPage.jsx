@@ -35,8 +35,20 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card glass-effect">
+    <div className="auth-container auth-container--register">
+      <header className="auth-topbar">
+        <Link className="auth-brand" to="/login">Focus Pet</Link>
+        <div className="auth-top-actions">
+          <span>Masz już konto?</span>
+          <Link className="auth-top-button" to="/login">Zaloguj się</Link>
+        </div>
+      </header>
+
+      <main className="auth-register-shell">
+        <div className="auth-card glass-effect">
+          <div className="auth-egg" aria-hidden="true">
+            <span />
+          </div>
         <h2 className="auth-title">Dołącz do nas</h2>
         <p className="auth-subtitle">Zarejestruj się w Focus Pet</p>
         
@@ -82,7 +94,8 @@ const RegisterPage = () => {
         <div className="auth-links">
           <p>Masz już konto? <Link to="/login">Zaloguj się</Link></p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
