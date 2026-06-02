@@ -480,10 +480,35 @@ input {
   text-align: left;
 }
 
-.stat-bar span {
+.stat-bar__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  min-height: 16px;
+}
+
+.stat-bar span,
+.stat-bar__gain {
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.stat-bar__gain {
+  animation: stat-gain-fade 1s ease-in-out forwards;
+  color: var(--accent);
+}
+
+.stat-bar__gain--danger {
+  color: var(--danger);
+}
+
+.stat-bar__gain--warning {
+  color: var(--warning);
+}
+
+.stat-bar__gain--mint {
+  color: var(--accent);
 }
 
 .stat-bar__track {
@@ -508,6 +533,19 @@ input {
 
 .stat-bar__value--warning {
   background: var(--warning);
+}
+
+@keyframes stat-gain-fade {
+  0%,
+  65% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 .section-heading {
