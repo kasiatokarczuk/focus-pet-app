@@ -102,8 +102,16 @@ function FocusSessionPage() {
         </div>
 
         <div className="session-pet-frame">
-          <img src={petImage} alt="" aria-hidden="true" />
-        </div>
+          <video
+         autoPlay
+        loop
+    muted
+    playsInline
+    aria-hidden="true"
+  >
+    <source src={`${process.env.PUBLIC_URL}/assets/pets/cat/sleep-video.mp4`} type="video/mp4" />
+  </video>
+</div>
 
         <h1>{petName} is resting while you work</h1>
         <p>Don't leave the app or {petName} will wake up</p>

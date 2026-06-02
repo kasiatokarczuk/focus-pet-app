@@ -9,7 +9,12 @@ function ShopItemCard({ item, onBuy }) {
     <article className="shop-card">
       <div className="shop-card__image">
         {item.image ? (
-          <img src={`${process.env.PUBLIC_URL}${item.image}`} alt={item.name} />
+          <img
+            src={`${process.env.PUBLIC_URL}${item.image}`}
+            alt={item.name}
+            decoding="async"
+            loading="eager"
+          />
         ) : null}
       </div>
       <div className="shop-card__title">

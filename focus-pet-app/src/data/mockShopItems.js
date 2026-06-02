@@ -5,7 +5,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 250,
     owned: true,
-    image: '/assets/shop/summer-straw-hat.png',
+    image: '/assets/shop/summer-straw-hat.webp',
     description: 'A lightweight hat for sunny days in the pet garden.',
   },
   {
@@ -14,7 +14,7 @@ export const mockShopItems = [
     category: 'food',
     price: 150,
     owned: false,
-    image: '/assets/shop/golden-seeds.png',
+    image: '/assets/shop/golden-seeds.webp',
     description: 'Highly nutritious seeds that boost focus duration by 5%.',
     effect: {
       stat: 'energy',
@@ -27,7 +27,7 @@ export const mockShopItems = [
     category: 'food',
     price: 120,
     owned: false,
-    image: '/assets/shop/moonberry-snack.png',
+    image: '/assets/shop/moonberry-snack.webp',
     description: 'A sweet treat that helps your pet recover after focus sessions.',
     effect: {
       stat: 'hp',
@@ -40,7 +40,7 @@ export const mockShopItems = [
     category: 'food',
     price: 180,
     owned: false,
-    image: '/assets/shop/crystal-apple.png',
+    image: '/assets/shop/crystal-apple.webp',
     description: 'A rare fruit filled with calm energy for long study days.',
     effect: {
       stat: 'energy',
@@ -53,7 +53,7 @@ export const mockShopItems = [
     category: 'food',
     price: 90,
     owned: false,
-    image: '/assets/shop/dream-tea.png',
+    image: '/assets/shop/dream-tea.webp',
     description: 'A warm drink that keeps your pet relaxed and balanced.',
     effect: {
       stat: 'hp',
@@ -66,7 +66,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 320,
     owned: false,
-    image: '/assets/shop/starry-scarf.png',
+    image: '/assets/shop/starry-scarf.webp',
     description: 'A soft scarf decorated with tiny glowing stars.',
   },
   {
@@ -75,7 +75,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 400,
     owned: false,
-    image: '/assets/shop/focus-glasses.png',
+    image: '/assets/shop/focus-glasses.webp',
     description: 'Stylish glasses for pets who supervise deep work rituals.',
   },
   {
@@ -84,7 +84,7 @@ export const mockShopItems = [
     category: 'accessories',
     price: 280,
     owned: false,
-    image: '/assets/shop/tiny-backpack.png',
+    image: '/assets/shop/tiny-backpack.webp',
     description: 'A practical backpack for carrying snacks and small rewards.',
   },
 ];

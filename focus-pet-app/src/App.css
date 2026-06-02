@@ -638,6 +638,7 @@ input {
 
 .shop-card__image {
   align-items: center;
+  background: rgba(0, 14, 38, 0.38);
   border-radius: 8px;
   display: flex;
   height: 176px;
@@ -784,20 +785,21 @@ input {
 
 .session-pet-frame {
   align-items: center;
-  background: radial-gradient(circle at 50% 35%, rgba(115, 217, 181, 0.18), rgba(0, 31, 70, 0.92) 58%, rgba(0, 14, 38, 0.94) 100%);
+  background: transparent;
   display: flex;
   height: 236px;
   justify-content: center;
   margin: 46px auto 24px;
   overflow: hidden;
-  width: 246px;
+  width:430px ;
 }
 
 .session-pet-frame img,
+.session-pet-frame video,
 .session-state__pet img {
   display: block;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   width: 100%;
 }
 
