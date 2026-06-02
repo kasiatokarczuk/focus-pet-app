@@ -566,10 +566,20 @@ input {
 .task-card {
   align-items: center;
   border-radius: var(--radius-lg);
+  cursor: pointer;
   display: grid;
   gap: 16px;
   grid-template-columns: 24px 1fr;
   padding: 24px;
+}
+
+.task-card--selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(115, 217, 181, 0.12), var(--shadow);
+}
+
+.task-card input {
+  accent-color: var(--accent);
 }
 
 .task-card--draft {

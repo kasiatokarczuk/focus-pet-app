@@ -1,23 +1,63 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Pause, Square, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { initialAppState } from '../data/initialState';
 import { mockTasks } from '../data/mockTasks';
 import { calculateSessionRewards } from '../utils/rewards';
-import { getUserData } from '../utils/storage';
+import { getUserData, saveUserData } from '../utils/storage';
 import { formatSeconds } from '../utils/timer';
 import SessionCompletePage from './SessionCompletePage';
 import SessionPausedPage from './SessionPausedPage';
 
-const sessionLengthSeconds = 25 * 60;
+const maxPetStat = 100;
 
 function FocusSessionPage() {
   const { currentUser } = useAuth();
+  const location = useLocation();
   const [appState, setAppState] = useState(null);
   const [sessionState, setSessionState] = useState('running');
-  const [remainingSeconds, setRemainingSeconds] = useState(sessionLengthSeconds);
-  const rewards = calculateSessionRewards(sessionLengthSeconds);
-  const task = mockTasks[0];
+  const [remainingSeconds, setRemainingSeconds] = useState(null);
+  const [completedSession, setCompletedSession] = useState(null);
+  const selectedTaskFromRoute = location.state?.task;
+  const selectedTaskId = location.state?.taskId || selectedTaskFromRoute?.id;
+  const task =
+    appState?.tasks?.find((item) => item.id === selectedTaskId) ||
+    selectedTaskFromRoute ||
+    appState?.tasks?.[0] ||
+    mockTasks[0];
+  const sessionDurationSeconds = (task.sessionLength || 25) * 60;
+
+  const completeSession = useCallback((focusSeconds) => {
+    const finalFocusSeconds = Math.max(focusSeconds, 0);
+    const rewards = calculateSessionRewards(finalFocusSeconds);
+
+    setCompletedSession({
+      focusSeconds: finalFocusSeconds,
+      rewards,
+    });
+    setSessionState('complete');
+
+    if (!appState || !currentUser) {
+      return;
+    }
+
+    const nextState = {
+      ...appState,
+      coins: appState.coins + rewards.coins,
+      pet: {
+        ...appState.pet,
+        hp: Math.min((appState.pet?.hp || 0) + rewards.hp, maxPetStat),
+        xp: (appState.pet?.xp || 0) + rewards.xp,
+      },
+      tasks: appState.tasks.map((item) =>
+        item.id === task.id ? { ...item, isDone: true } : item
+      ),
+    };
+
+    setAppState(nextState);
+    saveUserData(currentUser.uid, nextState);
+  }, [appState, currentUser, task.id]);
 
   useEffect(() => {
     async function fetchData() {
@@ -30,7 +70,15 @@ function FocusSessionPage() {
   }, [currentUser]);
 
   useEffect(() => {
-    if (sessionState !== 'running') {
+    const canStartTimer = Boolean(appState || selectedTaskFromRoute);
+
+    if (canStartTimer && task?.id && remainingSeconds === null && completedSession === null) {
+      setRemainingSeconds(sessionDurationSeconds);
+    }
+  }, [appState, completedSession, remainingSeconds, selectedTaskFromRoute, sessionDurationSeconds, task?.id]);
+
+  useEffect(() => {
+    if (!appState || sessionState !== 'running' || remainingSeconds === null) {
       return undefined;
     }
 
@@ -39,16 +87,17 @@ function FocusSessionPage() {
     }, 1000);
 
     return () => clearInterval(timerId);
-  }, [sessionState]);
+  }, [appState, remainingSeconds, sessionState]);
 
   useEffect(() => {
-    if (sessionState === 'running' && remainingSeconds === 0) {
-      setSessionState('complete');
+    if (sessionState === 'running' && remainingSeconds === 0 && completedSession === null) {
+      completeSession(sessionDurationSeconds);
     }
-  }, [remainingSeconds, sessionState]);
+  }, [completeSession, completedSession, remainingSeconds, sessionDurationSeconds, sessionState]);
 
   function handleRestart() {
-    setRemainingSeconds(sessionLengthSeconds);
+    setCompletedSession(null);
+    setRemainingSeconds(sessionDurationSeconds);
     setSessionState('running');
   }
 
@@ -63,7 +112,9 @@ function FocusSessionPage() {
   const petType = appState.pet?.type || 'fox';
   const petName = task.petName || appState.pet?.name || 'Finley';
   const petImage = `${process.env.PUBLIC_URL}/assets/pets/${petType}/sleeping.png`;
-  const focusTime = formatSeconds(sessionLengthSeconds);
+  const completedFocusSeconds = completedSession?.focusSeconds ?? sessionDurationSeconds;
+  const focusTime = formatSeconds(completedFocusSeconds);
+  const rewards = completedSession?.rewards ?? calculateSessionRewards(completedFocusSeconds);
 
   if (sessionState === 'paused') {
     return (
@@ -98,7 +149,7 @@ function FocusSessionPage() {
         </p>
 
         <div className="session-timer-shell">
-          <strong className="session-timer">{formatSeconds(remainingSeconds)}</strong>
+          <strong className="session-timer">{formatSeconds(remainingSeconds ?? sessionDurationSeconds)}</strong>
         </div>
 
         <div className="session-pet-frame">
@@ -117,7 +168,11 @@ function FocusSessionPage() {
         <p>Don't leave the app or {petName} will wake up</p>
 
         <div className="session-controls session-controls--icon">
-          <button className="session-icon-action" onClick={() => setSessionState('complete')} type="button">
+          <button
+            className="session-icon-action"
+            onClick={() => completeSession(sessionDurationSeconds - (remainingSeconds ?? sessionDurationSeconds))}
+            type="button"
+          >
             <span>
               <Square aria-hidden="true" size={18} />
             </span>

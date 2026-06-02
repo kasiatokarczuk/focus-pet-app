@@ -1,10 +1,11 @@
 export function calculateSessionRewards(durationSeconds) {
-  const minutes = Math.floor(durationSeconds / 60);
+  const minutes = durationSeconds / 60;
+  const hasFocusTime = durationSeconds > 0;
 
   return {
-    coins: Math.floor(minutes * 0.5 * 2),
-    xp: Math.max(Math.floor(minutes / 5), 1),
-    hp: 15,
+    coins: hasFocusTime ? Math.max(Math.round(minutes * 2), 1) : 0,
+    xp: hasFocusTime ? Math.max(Math.floor(minutes / 5), 1) : 0,
+    hp: hasFocusTime ? Math.max(Math.round(minutes * 0.6), 1) : 0,
   };
 }
 
