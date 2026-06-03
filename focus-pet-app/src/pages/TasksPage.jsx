@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Button from '../components/Button';
 import Header from '../components/Header';
-import Input from '../components/Input';
 import PetCard from '../components/PetCard';
-import { getUserData } from '../utils/storage';
+import { getUserData, saveUserData } from '../utils/storage';
 import { useAuth } from '../context/AuthContext';
 import { initialAppState } from '../data/initialState';
 
@@ -14,7 +13,6 @@ const filters = ['All', 'Tasks', 'Projects'];
 function TasksPage() {
   const { currentUser } = useAuth();
   const [activeFilter, setActiveFilter] = useState('All');
-  const [isAddingTask, setIsAddingTask] = useState(false);
   const [appState, setAppState] = useState(null);
   const [selectedTaskId, setSelectedTaskId] = useState('');
 
@@ -43,13 +41,50 @@ function TasksPage() {
     );
   }
 
-  const { coins, pet, tasks, user } = appState;
+  const { coins, pet, user } = appState;
+  const tasks = appState.tasks || [];
 
   const visibleTasks = tasks.filter((task) => {
     if (activeFilter === 'All') return true;
     return task.type === activeFilter.toLowerCase();
   });
   const selectedTask = tasks.find((task) => task.id === selectedTaskId) || tasks[0];
+
+  function persistTasks(nextTasks) {
+    const nextState = {
+      ...appState,
+      tasks: nextTasks,
+    };
+
+    setAppState(nextState);
+
+    if (currentUser) {
+      saveUserData(currentUser.uid, nextState);
+    }
+  }
+
+  function handleToggleTaskDone(taskId, event) {
+    event.stopPropagation();
+    const nextTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, isDone: !task.isDone } : task
+    );
+
+    persistTasks(nextTasks);
+  }
+
+  function handleDeleteTask(taskId, event) {
+    event.stopPropagation();
+
+    if (!window.confirm('Delete this task?')) {
+      return;
+    }
+
+    const nextTasks = tasks.filter((task) => task.id !== taskId);
+    const nextSelectedTaskId = selectedTaskId === taskId ? nextTasks[0]?.id || '' : selectedTaskId;
+
+    persistTasks(nextTasks);
+    setSelectedTaskId(nextSelectedTaskId);
+  }
 
   return (
     <main className="app-shell">
@@ -71,38 +106,53 @@ function TasksPage() {
           </div>
 
           <div className="task-list">
-            {visibleTasks.map((task) => (
+            {visibleTasks.length ? visibleTasks.map((task) => (
               <article
-                className={`task-card ${selectedTaskId === task.id ? 'task-card--selected' : ''}`.trim()}
+                className={`task-card ${selectedTaskId === task.id ? 'task-card--selected' : ''} ${task.isDone ? 'task-card--done' : ''}`.trim()}
                 key={task.id}
                 onClick={() => setSelectedTaskId(task.id)}
               >
                 <input
-                  aria-label={`Select ${task.title}`}
-                  checked={selectedTaskId === task.id}
-                  onChange={() => setSelectedTaskId(task.id)}
+                  aria-label={`Complete ${task.title}`}
+                  checked={task.isDone}
+                  onChange={(event) => handleToggleTaskDone(task.id, event)}
+                  onClick={(event) => event.stopPropagation()}
                   type="checkbox"
                 />
-                <div>
+                <div className="task-card__body">
                   <h3>{task.title}</h3>
                   <p>
                     {task.category} · {task.sessionLength} min session
                   </p>
                 </div>
+                <div className="task-card__actions">
+                  <Link
+                    className="task-card__action"
+                    onClick={(event) => event.stopPropagation()}
+                    to={`/tasks/new?edit=${task.id}`}
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    className="task-card__action task-card__action--danger"
+                    onClick={(event) => handleDeleteTask(task.id, event)}
+                    type="button"
+                  >
+                    Delete
+                  </button>
+                </div>
               </article>
-            ))}
-
-            {isAddingTask ? (
-              <article className="task-card task-card--draft">
-                <input aria-label="New task checkbox" disabled type="checkbox" />
-                <Input id="newTask" label="New task" placeholder="Enter task name..." />
-              </article>
-            ) : null}
+            )) : (
+              <div className="task-empty-state">
+                <h2>No tasks here yet.</h2>
+                <p>Add a task or project to prepare your next focus session.</p>
+              </div>
+            )}
           </div>
 
-          <div className="tasks-add-action">
-            <Button onClick={() => setIsAddingTask(true)}>+ Add Task</Button>
-          </div>
+          <Link className="tasks-add-action" to="/tasks/new">
+            <Button>+ Add Task</Button>
+          </Link>
         </div>
 
         <aside className="tasks-pet-panel">

@@ -34,7 +34,8 @@ a {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -98,6 +99,10 @@ input {
 .field__input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(115, 217, 181, 0.14);
+}
+
+.field__select {
+  color-scheme: dark;
 }
 
 .field__error {
@@ -759,7 +764,7 @@ input {
   cursor: pointer;
   display: grid;
   gap: 20px;
-  grid-template-columns: 28px 1fr;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
   min-height: 112px;
   padding: 28px 32px;
 }
@@ -775,8 +780,46 @@ input {
   width: 18px;
 }
 
-.task-card--draft {
-  border-style: dashed;
+.task-card--done {
+  opacity: 0.68;
+}
+
+.task-card--done h3 {
+  text-decoration: line-through;
+}
+
+.task-card__body {
+  min-width: 0;
+}
+
+.task-card__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.task-card__action {
+  align-items: center;
+  background: rgba(219, 229, 255, 0.08);
+  border: 1px solid rgba(219, 229, 255, 0.12);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 800;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.task-card__action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.task-card__action--danger {
+  color: var(--danger);
 }
 
 .task-card h3,
@@ -795,6 +838,129 @@ input {
   font-weight: 800;
   margin: 8px 0 0;
   text-transform: uppercase;
+}
+
+.task-empty-state {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  padding: 36px;
+}
+
+.task-empty-state h2 {
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.task-empty-state p {
+  margin: 0;
+}
+
+.task-form-page {
+  padding-bottom: 40px;
+}
+
+.task-form-back {
+  color: var(--accent);
+  display: inline-flex;
+  font-weight: 800;
+  margin-bottom: 24px;
+}
+
+.task-form-shell {
+  align-items: start;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  margin: 0 auto;
+  max-width: 1180px;
+}
+
+.task-form-card,
+.task-form-preview {
+  background: linear-gradient(145deg, rgba(0, 31, 70, 0.94), rgba(0, 19, 48, 0.94));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.task-form-card {
+  display: grid;
+  gap: 24px;
+  padding: 40px;
+}
+
+.task-form-card h1 {
+  font-size: 44px;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.task-form-intro {
+  color: var(--text-muted);
+  margin: -8px 0 0;
+  max-width: 620px;
+}
+
+.task-form-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.task-form-grid .field:first-child {
+  grid-column: 1 / -1;
+}
+
+.task-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.task-form-actions .button {
+  min-width: 156px;
+}
+
+.task-form-error {
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  border-radius: var(--radius-md);
+  color: var(--danger);
+  font-weight: 800;
+  padding: 14px 16px;
+}
+
+.task-form-preview {
+  padding: 28px;
+  position: sticky;
+  top: 24px;
+}
+
+.task-form-preview h2 {
+  font-size: 28px;
+  margin: 8px 0;
+}
+
+.task-form-preview > p:not(.eyebrow) {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.task-form-preview .pet-card--compact {
+  margin: 24px 0 0;
+  max-width: none;
+  padding: 28px;
+}
+
+.task-form-preview .pet-card__avatar {
+  height: 136px;
+  margin-bottom: 20px;
+  width: 136px;
 }
 
 .segmented-control {
@@ -1288,6 +1454,32 @@ input {
   .tasks-main,
   .tasks-pet-panel {
     max-width: none;
+  }
+
+  .task-form-shell,
+  .task-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-form-card {
+    padding: 28px;
+  }
+
+  .task-form-card h1 {
+    font-size: 34px;
+  }
+
+  .task-form-preview {
+    position: static;
+  }
+
+  .task-card {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .task-card__actions {
+    grid-column: 2;
+    justify-content: flex-start;
   }
 
   .home-pet-card .pet-card {
