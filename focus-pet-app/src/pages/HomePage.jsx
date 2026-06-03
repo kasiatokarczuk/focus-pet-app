@@ -44,16 +44,18 @@ function HomePage() {
   return (
     <main className="app-shell">
       <Header coins={coins} userLevel={user.title} userName={user.name} />
-      <section className="page-content">
+      <section className="page-content home-content">
         <h1>Welcome!</h1>
-        <PetCard pet={pet} />
+        <div className="home-pet-card">
+          <PetCard pet={pet} />
+        </div>
 
         <div className="section-heading">
           <h2>Tasks</h2>
           <Link to="/tasks">View all</Link>
         </div>
 
-        <div className="task-list">
+        <div className="task-list home-task-list">
           {tasks.slice(0, 2).map((task) => (
             <article
               className={`task-card ${selectedTaskId === task.id ? 'task-card--selected' : ''}`.trim()}
