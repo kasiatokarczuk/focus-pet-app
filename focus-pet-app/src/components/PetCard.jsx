@@ -5,10 +5,14 @@ function PetCard({ pet, compact = false, statGains = {} }) {
     return null;
   }
 
+  const petType = pet.type || 'cat';
+  const petStage = pet.hp <= 0 ? 'hibernation' : pet.stage || 'baby';
+  const petImage = `${process.env.PUBLIC_URL}/assets/pets/${petType}/${petStage}.png`;
+
   return (
     <section className={`pet-card ${compact ? 'pet-card--compact' : ''}`.trim()}>
       <div className="pet-card__avatar" aria-hidden="true">
-        <span>{pet.name?.charAt(0) || '?'}</span>
+        <img className="pet-card__image" src={petImage} alt="" />
       </div>
       <h2>{pet.name}</h2>
       <p>{pet.stageLabel}</p>

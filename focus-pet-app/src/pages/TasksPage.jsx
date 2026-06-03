@@ -54,8 +54,8 @@ function TasksPage() {
   return (
     <main className="app-shell">
       <Header coins={coins} userLevel={user.title} userName={user.name} />
-      <section className="page-content page-content--two-columns">
-        <div>
+      <section className="page-content page-content--two-columns tasks-layout">
+        <div className="tasks-main">
           <h1>Tasks</h1>
           <div className="segmented-control">
             {filters.map((filter) => (
@@ -100,10 +100,12 @@ function TasksPage() {
             ) : null}
           </div>
 
-          <Button onClick={() => setIsAddingTask(true)}>+ Add Task</Button>
+          <div className="tasks-add-action">
+            <Button onClick={() => setIsAddingTask(true)}>+ Add Task</Button>
+          </div>
         </div>
 
-        <aside>
+        <aside className="tasks-pet-panel">
           <PetCard compact pet={pet} />
         </aside>
       </section>
