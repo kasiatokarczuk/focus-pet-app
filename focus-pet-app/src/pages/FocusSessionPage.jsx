@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Pause, Square, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -15,10 +15,12 @@ const maxPetStat = 100;
 function FocusSessionPage() {
   const { currentUser } = useAuth();
   const location = useLocation();
+  const zenAudioRef = useRef(null);
   const [appState, setAppState] = useState(null);
   const [sessionState, setSessionState] = useState('running');
   const [remainingSeconds, setRemainingSeconds] = useState(null);
   const [completedSession, setCompletedSession] = useState(null);
+  const [isZenSoundPlaying, setIsZenSoundPlaying] = useState(false);
   const selectedTaskFromRoute = location.state?.task;
   const selectedTaskId = location.state?.taskId || selectedTaskFromRoute?.id;
   const task =
@@ -94,6 +96,33 @@ function FocusSessionPage() {
       completeSession(sessionDurationSeconds);
     }
   }, [completeSession, completedSession, remainingSeconds, sessionDurationSeconds, sessionState]);
+
+  useEffect(() => () => {
+    if (zenAudioRef.current) {
+      zenAudioRef.current.pause();
+      zenAudioRef.current.currentTime = 0;
+    }
+  }, []);
+
+  function handleToggleZenSound() {
+    const audio = zenAudioRef.current;
+
+    if (!audio) {
+      return;
+    }
+
+    if (isZenSoundPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsZenSoundPlaying(false);
+      return;
+    }
+
+    audio.volume = 0.35;
+    audio.play()
+      .then(() => setIsZenSoundPlaying(true))
+      .catch(() => setIsZenSoundPlaying(false));
+  }
 
   function handleRestart() {
     setCompletedSession(null);
@@ -186,13 +215,22 @@ function FocusSessionPage() {
             <strong>Take a Breath</strong>
           </button>
 
-          <button className="session-icon-action" type="button">
+          <button
+            aria-pressed={isZenSoundPlaying}
+            className={`session-icon-action ${isZenSoundPlaying ? 'session-icon-action--active' : ''}`.trim()}
+            onClick={handleToggleZenSound}
+            type="button"
+          >
             <span>
               <Volume2 aria-hidden="true" size={18} />
             </span>
-            <strong>Zen Sounds</strong>
+            <strong>{isZenSoundPlaying ? 'Stop Sounds' : 'Zen Sounds'}</strong>
           </button>
         </div>
+
+        <audio ref={zenAudioRef} loop preload="auto">
+          <source src={`${process.env.PUBLIC_URL}/assets/sounds/relax.mp3`} type="audio/mpeg" />
+        </audio>
       </section>
     </main>
   );
