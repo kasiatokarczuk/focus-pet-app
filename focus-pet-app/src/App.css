@@ -1252,6 +1252,16 @@ select {
   color: var(--accent);
 }
 
+.session-icon-action--active span {
+  background: rgba(115, 217, 181, 0.18);
+  box-shadow: 0 0 0 1px rgba(115, 217, 181, 0.3);
+  color: var(--accent);
+}
+
+.session-icon-action--active strong {
+  color: var(--accent);
+}
+
 .app-shell--session-state {
   min-height: 100vh;
 }

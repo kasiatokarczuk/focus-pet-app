@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { initializeHotjar } from './utils/analytics';
 
 // Importy komponentów stron
 import FocusSessionPage from './pages/FocusSessionPage';
@@ -25,6 +26,10 @@ import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
+  useEffect(() => {
+    initializeHotjar();
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>
