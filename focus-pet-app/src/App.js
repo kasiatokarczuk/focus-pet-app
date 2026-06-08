@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { initializeHotjar } from './utils/analytics';
+import { initializeGoogleAnalytics, initializeHotjar } from './utils/analytics';
 
 // Importy komponentów stron
 import FocusSessionPage from './pages/FocusSessionPage';
@@ -23,16 +23,19 @@ import SessionCompletePage from './pages/SessionCompletePage';
 
 // Importy związane z autoryzacją
 import { AuthProvider } from './context/AuthContext';
+import AnalyticsListener from './components/AnalyticsListener';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   useEffect(() => {
     initializeHotjar();
+    initializeGoogleAnalytics();
   }, []);
 
   return (
     <AuthProvider>
       <BrowserRouter>
+        <AnalyticsListener />
         <Routes>
           {/* Trasa główna przekierowująca do logowania */}
           <Route path="/" element={<Navigate to="/login" replace />} />
